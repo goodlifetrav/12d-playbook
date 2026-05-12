@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 12D Sales Playbook — Internal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #07091a;
+  --bg-base: #0c1024;
+  --bg-surface: #131836;
+  --bg-card: #181d3f;
+  --bg-elevated: #1f254d;
+  --border: rgba(170, 158, 110, 0.18);
+  --border-soft: rgba(170, 158, 110, 0.08);
+  --border-hover: rgba(212, 168, 95, 0.45);
+
+  --text-primary: #f0ebde;
+  --text-secondary: #b5b0c4;
+  --text-muted: #7a7693;
+  --text-faint: #4a4660;
+
+  --gold: #d4a85f;
+  --gold-soft: #b89248;
+  --gold-glow: rgba(212, 168, 95, 0.25);
+  --cyan: #7ebac9;
+  --rose: #c97a85;
+  --sage: #8aab92;
+  --violet: #9d8ec4;
+
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 40px rgba(212, 168, 95, 0.08);
+
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Outfit', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  line-height: 1.65;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Cosmic starfield background */
+.cosmos {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse at top, #1a1d4a 0%, #0c1024 35%, #07091a 75%),
+    radial-gradient(ellipse at bottom right, rgba(157, 142, 196, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.cosmos::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 24% 67%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(2px 2px at 38% 28%, rgba(212,168,95,0.5), transparent),
+    radial-gradient(1px 1px at 52% 89%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 67% 14%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 78% 56%, rgba(126,186,201,0.4), transparent),
+    radial-gradient(1px 1px at 89% 32%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 5% 78%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 45% 42%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 91% 81%, rgba(212,168,95,0.4), transparent);
+  background-size: 200% 200%;
+  animation: drift 240s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes drift {
+  from { background-position: 0% 0%; }
+  to { background-position: 100% 100%; }
+}
+
+/* Grain overlay */
+.cosmos::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+/* ============ LAYOUT ============ */
+
+.app {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  min-height: 100vh;
+}
+
+/* ============ SIDEBAR ============ */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: rgba(7, 9, 26, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border-soft);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 24px;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-mark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-title {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.brand-subtitle {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--gold);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.search-wrap {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 10px 14px 10px 36px;
+  color: var(--text-primary);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 300;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--border-hover);
+  background: var(--bg-card);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.nav-section-label {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 16px 8px 8px;
+}
+
+.nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 8px 9px 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 4px;
+  border-left: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(212, 168, 95, 0.04);
+}
+
+.nav-item.active {
+  color: var(--gold);
+  background: rgba(212, 168, 95, 0.08);
+  border-left-color: var(--gold);
+}
+
+.nav-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  min-width: 18px;
+}
+
+.nav-item.active .nav-num { color: var(--gold-soft); }
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 24px;
+  margin-top: 16px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--text-secondary);
+  padding: 10px 14px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.control-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.control-btn.active {
+  background: rgba(212, 168, 95, 0.12);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.control-btn .indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-faint);
+  transition: all 0.2s ease;
+}
+
+.control-btn.active .indicator {
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* ============ MAIN CONTENT ============ */
+
+.main {
+  padding: 64px 80px 120px;
+  max-width: 1000px;
+}
+
+/* ============ CALL MODE BANNER ============ */
+
+.call-mode-banner {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(90deg, rgba(212, 168, 95, 0.15), rgba(212, 168, 95, 0.05));
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  padding: 12px 20px;
+  margin-bottom: 32px;
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+  font-weight: 500;
+}
+
+body.call-mode .call-mode-banner { display: block; }
+
+body.call-mode .non-essential { display: none; }
+
+/* ============ HERO ============ */
+
+.hero {
+  padding: 40px 0 80px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 80px;
+  position: relative;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 300;
+}
+
+.hero-subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  max-width: 640px;
+  margin-bottom: 40px;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero-meta span strong {
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+/* ============ SECTIONS ============ */
+
+.section {
+  scroll-margin-top: 40px;
+  margin-bottom: 80px;
+  position: relative;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.section-number {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  min-width: 60px;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+
+.section-intro {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  max-width: 700px;
+}
+
+.section h3 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 36px 0 16px;
+  letter-spacing: -0.005em;
+}
+
+.section h4 {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 24px 0 12px;
+}
+
+.section p {
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.section p.muted {
+  color: var(--text-secondary);
+}
+
+.section strong {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.section em {
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+.section ul, .section ol {
+  margin: 16px 0;
+  padding-left: 4px;
+  list-style: none;
+}
+
+.section li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.section li::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--gold);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.section ol { counter-reset: list; }
+.section ol > li { counter-increment: list; }
+.section ol > li::before {
+  content: counter(list, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--gold-soft);
+  top: 4px;
+}
+
+/* ============ DIVIDER ============ */
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 48px 0;
+  gap: 16px;
+  color: var(--gold);
+  opacity: 0.5;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.divider-mark { font-size: 12px; }
+
+/* ============ GLOSSARY ============ */
+
+.glossary {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.glossary-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border-soft);
+  align-items: baseline;
+}
+
+.glossary-row:last-child { border-bottom: none; }
+
+.glossary-term {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gold);
+  font-style: italic;
+}
+
+.glossary-def {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ============ CARDS ============ */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 28px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--border);
+  background: var(--bg-elevated);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.card-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 3px 8px;
+  border: 1px solid var(--gold);
+  border-radius: 3px;
+}
+
+.card-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ============ SCRIPT BLOCKS ============ */
+
+.script {
+  position: relative;
+  background: linear-gradient(135deg, rgba(24, 29, 63, 0.6), rgba(31, 37, 77, 0.4));
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  padding: 24px 28px;
+  margin: 16px 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.script::before {
+  content: '"';
+  position: absolute;
+  top: -8px;
+  left: 16px;
+  font-family: var(--serif);
+  font-size: 48px;
+  color: var(--gold);
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.script-label {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.script:hover .copy-btn { opacity: 1; }
+
+.copy-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.copy-btn.copied {
+  background: rgba(138, 171, 146, 0.15);
+  border-color: var(--sage);
+  color: var(--sage);
+  opacity: 1;
+}
+
+/* ============ OBJECTIONS ============ */
+
+.objections-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.objection {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.objection:hover {
+  border-color: var(--border);
+}
+
+.objection.open {
+  border-color: var(--border);
+  background: var(--bg-elevated);
+}
+
+.objection-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.objection-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gold-soft);
+  letter-spacing: 0.1em;
+  min-width: 32px;
+}
+
+.objection-q {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.objection-toggle {
+  color: var(--text-muted);
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.objection.open .objection-toggle {
+  transform: rotate(45deg);
+  color: var(--gold);
+}
+
+.objection-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.objection.open .objection-body { max-height: 800px; }
+
+.objection-body-inner {
+  padding: 0 24px 24px;
+}
+
+/* ============ PRICING TIERS ============ */
+
+.tiers {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.tier {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tier.recommended {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(212, 168, 95, 0.06), var(--bg-card) 50%);
+  box-shadow: 0 0 40px rgba(212, 168, 95, 0.1);
+}
+
+.tier-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: var(--bg-deep);
+  padding: 4px 14px;
+  font-family: var(--sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-radius: 3px;
+}
+
+.tier-name {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.tier.recommended .tier-name { color: var(--gold); }
+
+.tier-internal {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.tier-price {
+  font-family: var(--serif);
+  font-size: 42px;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.tier-price sup {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--text-muted);
+  vertical-align: top;
+  margin-right: 4px;
+}
+
+.tier-period {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.tier-includes {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.tier-features {
+  list-style: none;
+  flex: 1;
+}
+
+.tier-features li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 8px 0 8px 22px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.tier-features li::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  color: var(--gold);
+  font-size: 10px;
+}
+
+.tier-features li.bonus {
+  color: var(--gold);
+  font-style: italic;
+  font-weight: 500;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-soft);
+}
+
+.tier-features li.bonus::before {
+  content: '✧';
+  color: var(--gold);
+  top: 14px;
+}
+
+.tier-best {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+  line-height: 1.5;
+}
+
+/* ============ MATH CALLOUT ============ */
+
+.math-callout {
+  background: linear-gradient(135deg, rgba(212, 168, 95, 0.08), rgba(126, 186, 201, 0.04));
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 32px 36px;
+  margin: 32px 0;
+  position: relative;
+}
+
+.math-callout-label {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.math-line {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.math-line strong {
+  font-weight: 600;
+  color: var(--gold);
+  font-family: var(--serif);
+}
+
+.math-result {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.math-result em {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* ============ BONUS DEPLOY BOX ============ */
+
+.bonus-deploy {
+  background: var(--bg-card);
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 32px;
+  margin: 32px 0;
+}
+
+.bonus-deploy-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.bonus-deploy-icon {
+  font-size: 24px;
+  color: var(--gold);
+}
+
+.bonus-deploy-title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.bonus-deploy-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+}
+
+.bonus-rules {
+  margin-top: 20px;
+}
+
+/* ============ STEPS (Sales Path) ============ */
+
+.steps {
+  position: relative;
+  padding-left: 32px;
+  margin: 32px 0;
+}
+
+.steps::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--gold) 0%, var(--border-soft) 100%);
+}
+
+.step {
+  position: relative;
+  margin-bottom: 32px;
+}
+
+.step-marker {
+  position: absolute;
+  left: -32px;
+  top: 4px;
+  width: 23px;
+  height: 23px;
+  background: var(--bg-deep);
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--gold);
+}
+
+.step-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.step-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.step-duration {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.step-desc {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+/* ============ QUESTION BANK ============ */
+
+.q-bank {
+  display: grid;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.q-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 24px 28px;
+}
+
+.q-group-title {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.q-group ul li {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--text-primary);
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.q-group ul li::before {
+  content: '—';
+  color: var(--gold);
+  font-style: normal;
+}
+
+/* ============ TABLE ============ */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table th {
+  background: var(--bg-surface);
+  padding: 14px 20px;
+  text-align: left;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.table td {
+  padding: 14px 20px;
+  font-size: 14px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.table tr:last-child td { border-bottom: none; }
+
+.table tr:hover td { background: rgba(212, 168, 95, 0.03); }
+
+.table .num {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--gold);
+}
+
+/* ============ ALERT BOXES ============ */
+
+.alert {
+  border-radius: 8px;
+  padding: 24px 28px;
+  margin: 20px 0;
+  border-left: 3px solid;
+}
+
+.alert.warning {
+  background: rgba(201, 122, 133, 0.06);
+  border-color: var(--rose);
+}
+
+.alert.success {
+  background: rgba(138, 171, 146, 0.06);
+  border-color: var(--sage);
+}
+
+.alert.gold {
+  background: rgba(212, 168, 95, 0.06);
+  border-color: var(--gold);
+}
+
+.alert-title {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.alert.warning .alert-title { color: var(--rose); }
+.alert.success .alert-title { color: var(--sage); }
+.alert.gold .alert-title { color: var(--gold); }
+
+.alert p { font-size: 14px; }
+
+/* ============ GOLDEN RULE (final) ============ */
+
+.golden-rule {
+  text-align: center;
+  padding: 80px 40px;
+  margin: 80px -40px 40px;
+  background: radial-gradient(ellipse at center, rgba(212, 168, 95, 0.08) 0%, transparent 70%);
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.golden-rule-label {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+}
+
+.golden-rule-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--text-primary);
+  max-width: 720px;
+  margin: 0 auto 32px;
+  letter-spacing: -0.005em;
+}
+
+.golden-rule-quote em {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.golden-rule-tail {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ============ FOOTER ============ */
+
+.footer {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  text-align: center;
+  padding: 24px 0;
+  border-top: 1px solid var(--border-soft);
+  margin-top: 60px;
+}
+
+/* ============ STAGGER ANIMATION ============ */
+
+.section, .hero {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: rise 0.8s ease forwards;
+}
+
+.hero { animation-delay: 0.1s; }
+.section:nth-of-type(1) { animation-delay: 0.2s; }
+.section:nth-of-type(2) { animation-delay: 0.3s; }
+.section:nth-of-type(3) { animation-delay: 0.4s; }
+
+@keyframes rise {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ HIDDEN (search filter) ============ */
+
+.hidden { display: none !important; }
+
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 1024px) {
+  .app { grid-template-columns: 240px 1fr; }
+  .main { padding: 48px 48px 100px; }
+  .hero-title { font-size: 48px; }
+  .tiers { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: relative;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-soft);
+    padding: 20px;
+  }
+  .main { padding: 32px 24px 80px; }
+  .hero-title { font-size: 36px; }
+  .section-title { font-size: 28px; }
+  .section-header { flex-direction: column; gap: 8px; }
+  .glossary-row { grid-template-columns: 1fr; gap: 4px; }
+  .golden-rule-quote { font-size: 26px; }
+}
+
+/* ============ PRINT ============ */
+
+@media print {
+  body { background: white; color: #1a1a1a; }
+  .cosmos, .sidebar, .controls, .copy-btn, .call-mode-banner { display: none !important; }
+  .app { grid-template-columns: 1fr; }
+  .main { padding: 20px; max-width: none; }
+  .section { page-break-inside: avoid; margin-bottom: 32px; animation: none; opacity: 1; transform: none; }
+  .hero-title, .section-title, .card-title, .objection-q, .step-title { color: #1a1a1a; }
+  .section p, .section li, .glossary-def, .tier-features li { color: #2a2a2a; }
+  .script { background: #faf8f3; border-color: #c9a876; color: #1a1a1a; }
+  .objection-body { max-height: none !important; }
+  .objection { border: 1px solid #ddd; page-break-inside: avoid; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="cosmos"></div>
+
+<div class="app">
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <circle cx="22" cy="22" r="20" stroke="#d4a85f" stroke-width="0.8" opacity="0.4"/>
+        <circle cx="22" cy="22" r="14" stroke="#d4a85f" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="22" cy="22" r="8" stroke="#d4a85f" stroke-width="0.8"/>
+        <circle cx="22" cy="22" r="2" fill="#d4a85f"/>
+        <line x1="22" y1="2" x2="22" y2="42" stroke="#d4a85f" stroke-width="0.4" opacity="0.5"/>
+        <line x1="2" y1="22" x2="42" y2="22" stroke="#d4a85f" stroke-width="0.4" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-title">The 12D Path</div>
+      <div class="brand-subtitle">Sales Playbook</div>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" class="search-input" id="search" placeholder="Search the playbook…">
+  </div>
+
+  <div class="nav-section-label">Sections</div>
+  <ul class="nav" id="nav">
+    <li><a href="#mission" class="nav-item" data-num="01"><span class="nav-num">I</span><span>The Mission</span></a></li>
+    <li><a href="#terminology" class="nav-item"><span class="nav-num">II</span><span>Terminology</span></a></li>
+    <li><a href="#prep" class="nav-item"><span class="nav-num">III</span><span>Pre-Call Prep</span></a></li>
+    <li><a href="#qualify" class="nav-item"><span class="nav-num">IV</span><span>Lead Qualification</span></a></li>
+    <li><a href="#path" class="nav-item"><span class="nav-num">V</span><span>The Sales Path</span></a></li>
+    <li><a href="#questions" class="nav-item"><span class="nav-num">VI</span><span>Question Bank</span></a></li>
+    <li><a href="#script" class="nav-item"><span class="nav-num">VII</span><span>Battle-Tested Script</span></a></li>
+    <li><a href="#objections" class="nav-item"><span class="nav-num">VIII</span><span>Objections</span></a></li>
+    <li><a href="#redflags" class="nav-item"><span class="nav-num">IX</span><span>Red Flags</span></a></li>
+    <li><a href="#pricing" class="nav-item"><span class="nav-num">X</span><span>Pricing &amp; Offer</span></a></li>
+    <li><a href="#followup" class="nav-item"><span class="nav-num">XI</span><span>Follow-Up Cadence</span></a></li>
+    <li><a href="#handoff" class="nav-item"><span class="nav-num">XII</span><span>Post-Close Handoff</span></a></li>
+    <li><a href="#tonality" class="nav-item"><span class="nav-num">XIII</span><span>Tonality &amp; Delivery</span></a></li>
+    <li><a href="#ethics" class="nav-item"><span class="nav-num">XIV</span><span>Ethics &amp; Compliance</span></a></li>
+    <li><a href="#kpis" class="nav-item"><span class="nav-num">XV</span><span>KPIs &amp; Metrics</span></a></li>
+    <li><a href="#golden" class="nav-item"><span class="nav-num">XVI</span><span>The Golden Rule</span></a></li>
+  </ul>
+
+  <div class="controls">
+    <button class="control-btn" id="callModeBtn">
+      <span>Call Mode</span>
+      <span class="indicator"></span>
+    </button>
+    <button class="control-btn" id="printBtn">
+      <span>Print / PDF</span>
+      <span>→</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ============ MAIN ============ -->
+<main class="main">
+
+<div class="call-mode-banner">⟡ Call Mode — Scripts &amp; Tactical Reference Only ⟡</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-eyebrow">Internal · Sales Team Only</div>
+  <h1 class="hero-title">The 12D Sales <em>Playbook</em></h1>
+  <p class="hero-subtitle">Mastering the discovery, diagnostic, and close for The Twelve Dimensional Path — a system of operation, not a script to memorize.</p>
+  <div class="hero-meta">
+    <span>Version <strong>1.1</strong></span>
+    <span>Updated <strong>May 2026</strong></span>
+    <span>Sections <strong>16</strong></span>
+  </div>
+</header>
+
+<!-- ============ I. THE MISSION ============ -->
+<section class="section non-essential" id="mission">
+  <div class="section-header">
+    <div class="section-number">I.</div>
+    <h2 class="section-title">The Mission</h2>
+  </div>
+  <p class="section-intro">We aren't selling a course. We're providing a System of Operation.</p>
+  <p>Most prospects are running on a legacy <em>3D Autopilot</em> program that is inefficient and draining. Your job is to audit their current mental state, identify the <em>Leaks</em>, and bridge them to the 12D solution.</p>
+  <p>You are not their friend. You are not their guru. You are a <strong>consultant on their state of consciousness</strong>. That posture is what earns the close.</p>
+</section>
+
+<!-- ============ II. TERMINOLOGY ============ -->
+<section class="section non-essential" id="terminology">
+  <div class="section-header">
+    <div class="section-number">II.</div>
+    <h2 class="section-title">Core Terminology</h2>
+  </div>
+  <p class="section-intro">The shorthand that signals you understand Elizabeth's framework. Use it consistently — it separates us from generic coaching.</p>
+
+  <div class="glossary">
+    <div class="glossary-row">
+      <div class="glossary-term">The 3D Autopilot</div>
+      <div class="glossary-def">The reactive, low-awareness state where the prospect is responding to external stimuli without intention. The default operating system.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="glossary-term">Narrative Mind</div>
+      <div class="glossary-def">The internal chatter, the noise, the storyteller. The Problem.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="glossary-term">Observational Mind</div>
+      <div class="glossary-def">The silent executor. The witness. The Solution.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="glossary-term">Energy Leaks</div>
+      <div class="glossary-def">Every moment attention is hijacked by distraction. Lost mental capital.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="glossary-term">The Shift</div>
+      <div class="glossary-def">The move from being the character in the story to being the author.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="glossary-term">The Free Community (Standard)</div>
+      <div class="glossary-def">The free Skool tier — community space, monthly call, mp3 meditation. The lead-magnet entry point.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="glossary-term">The Classroom (Premium)</div>
+      <div class="glossary-def">$97/mo tier — Ritual, Alchemy &amp; Miracles class, Inner Realms mentoring, healing modules. The foundational paid container.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="glossary-term">The Lab (VIP)</div>
+      <div class="glossary-def">$999/yr tier — full library access, Advanced Remote Viewing, plus everything in Premium. The advanced container.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ III. PRE-CALL PREP ============ -->
+<section class="section non-essential" id="prep">
+  <div class="section-header">
+    <div class="section-number">III.</div>
+    <h2 class="section-title">Pre-Call Preparation</h2>
+  </div>
+  <p class="section-intro">Spend 5 minutes before every call. Walking in cold is how deals die.</p>
+
+  <h4>Review Before Dialing</h4>
+  <ul>
+    <li>Their Skool engagement — which posts have they commented on, what content have they consumed?</li>
+    <li>The free training or video that brought them in — assume that's their entry point and reference it directly.</li>
+    <li>Any DM or application answers they submitted.</li>
+    <li>Their public profile if available — location, occupation, life stage.</li>
+  </ul>
+
+  <h4>Mental Prep</h4>
+  <ul>
+    <li>Sit silent for 60 seconds before the call. Drop into the Observational Mind yourself. <em>If you are in 3D Autopilot, you cannot move them out of it.</em></li>
+    <li>Review the prospect's stated reason for joining. Anchor the opener to it.</li>
+  </ul>
+
+  <h4>Set the Environment</h4>
+  <ul>
+    <li>No notifications. No second screen with email. Phone face down.</li>
+    <li>Have the script and objection map open in one tab. Pricing and offer details in another.</li>
+  </ul>
+</section>
+
+<!-- ============ IV. LEAD QUALIFICATION ============ -->
+<section class="section non-essential" id="qualify">
+  <div class="section-header">
+    <div class="section-number">IV.</div>
+    <h2 class="section-title">Lead Qualification</h2>
+  </div>
+  <p class="section-intro">Not every lead deserves a 45-minute call. Filter before you invest.</p>
+
+  <div class="alert success">
+    <div class="alert-title">Qualified Prospect</div>
+    <ul style="margin-top:8px">
+      <li>Has consumed at least one piece of Elizabeth's content</li>
+      <li>Has articulated a specific friction — focus, exhaustion, meaning, stuckness</li>
+      <li>Has agency over their own finances and decisions</li>
+      <li>Engaged with the booking flow themselves, not pushed by someone else</li>
+    </ul>
+  </div>
+
+  <div class="alert warning">
+    <div class="alert-title">Disqualified Before the Call</div>
+    <ul style="margin-top:8px">
+      <li>Booked on a whim with no content engagement</li>
+      <li>Currently in acute mental health crisis (see Red Flags)</li>
+      <li>Looking for medical or therapeutic intervention</li>
+      <li>Cannot make a decision without a third party who isn't on the call</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ V. THE SALES PATH ============ -->
+<section class="section" id="path">
+  <div class="section-header">
+    <div class="section-number">V.</div>
+    <h2 class="section-title">The Sales Path</h2>
+  </div>
+  <p class="section-intro">The architecture of the call. Four steps, roughly 30–45 minutes total.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-marker">01</div>
+      <div class="step-header">
+        <div class="step-title">The Frame</div>
+        <div class="step-duration">~ 2 min</div>
+      </div>
+      <div class="step-desc">Set the tone. Don't be a friend — be a consultant.</div>
+      <div class="script">
+        <span class="script-label">Opener</span>
+        Hey [Name], Travis here. I saw you engaged with the 30-Second Shift video. My goal today is simple — I want to see if that shift actually clicked for you, or if your current 3D program is still running the show. Ready to dive in?
+        <button class="copy-btn">Copy</button>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker">02</div>
+      <div class="step-header">
+        <div class="step-title">The Audit</div>
+        <div class="step-duration">15–20 min</div>
+      </div>
+      <div class="step-desc">Discovery and diagnostics. You are not here to inform — you are here to diagnose.</div>
+      <div class="script">
+        <span class="script-label">Noise Check</span>
+        Scale of 1 to 10 — how loud is your internal chatter right now? Does it feel like a Brain Radio you can't turn off?
+        <button class="copy-btn">Copy</button>
+      </div>
+      <div class="script">
+        <span class="script-label">Leak Identification</span>
+        When you're working, how often does your focus snap? Every time that happens, you're leaking energy. Does that explain why you're exhausted by 3:00 PM?
+        <button class="copy-btn">Copy</button>
+      </div>
+      <div class="alert gold">
+        <div class="alert-title">Objective</div>
+        <p style="margin-top:8px">Get them to admit, <em>in their own words</em>, that the current system is failing. Until they say it, you can't sell the fix.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker">03</div>
+      <div class="step-header">
+        <div class="step-title">The Bridge</div>
+        <div class="step-duration">5–10 min</div>
+      </div>
+      <div class="step-desc">Frame 12D as a performance upgrade, not a belief system.</div>
+      <div class="script">
+        <span class="script-label">The Logic</span>
+        The reason you're stuck isn't lack of effort — it's high-overhead energy usage. Your Narrative Mind is burning 90% of your fuel. We teach you how to switch to the Observational Mind, which is a zero-friction state. It's like upgrading your brain's operating system.
+        <button class="copy-btn">Copy</button>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker">04</div>
+      <div class="step-header">
+        <div class="step-title">The Commitment</div>
+        <div class="step-duration">5–10 min</div>
+      </div>
+      <div class="step-desc">Match the offer to the leak severity. Default to VIP unless they're genuinely testing the waters.</div>
+      <div class="script">
+        <span class="script-label">VIP / The Lab — primary close</span>
+        Based on what you've told me, VIP is where you belong. It's $999 for the year — which is actually less than paying Premium monthly — and I'm including a 1:1 call with Elizabeth herself. This is the exact toolset you need to stop the leaks and regain your focus. Do we get you started today?
+        <button class="copy-btn">Copy</button>
+      </div>
+      <div class="script">
+        <span class="script-label">Premium / The Classroom — fallback close</span>
+        Let's start you in Premium at $97/mo so you can experience the work without a year-long commitment. You can always step up to VIP later.
+        <button class="copy-btn">Copy</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VI. QUESTION BANK ============ -->
+<section class="section" id="questions">
+  <div class="section-header">
+    <div class="section-number">VI.</div>
+    <h2 class="section-title">Discovery Question Bank</h2>
+  </div>
+  <p class="section-intro">He who asks the questions, controls the state. Use these to deepen the audit.</p>
+
+  <div class="q-bank">
+    <div class="q-group">
+      <div class="q-group-title">Surface · Warm-up</div>
+      <ul>
+        <li>What pulled you into Elizabeth's world in the first place?</li>
+        <li>What's the moment you realized something needed to change?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-title">Diagnostic · Find the Leak</div>
+      <ul>
+        <li>When was the last time you felt fully present — not chasing the next thing?</li>
+        <li>Walk me through the last 24 hours. Where did your attention go that you wish it hadn't?</li>
+        <li>What's the cost of staying exactly where you are for another year?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-title">Stakes · Amplify</div>
+      <ul>
+        <li>If nothing changes, what does your life look like in five years?</li>
+        <li>Who else pays the price when you're operating at half-capacity?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-title">Vision · Paint the Contrast</div>
+      <ul>
+        <li>If the noise stopped tomorrow, what would you actually do with that bandwidth?</li>
+        <li>What does your life look like when you're the author and not the character?</li>
+      </ul>
+    </div>
+
+    <div class="q-group">
+      <div class="q-group-title">Commitment · Test Readiness</div>
+      <ul>
+        <li>Scale of 1–10, how committed are you to actually fixing this — not just talking about it?</li>
+        <li>If I told you the path required 15 minutes a day, every day, are you in?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VII. BATTLE-TESTED SCRIPT ============ -->
+<section class="section" id="script">
+  <div class="section-header">
+    <div class="section-number">VII.</div>
+    <h2 class="section-title">The Battle-Tested Script</h2>
+  </div>
+  <p class="section-intro">The full sequence, ready to deploy. Copy any line directly to your CRM notes.</p>
+
+  <div class="script">
+    <span class="script-label">Opener</span>
+    Hi [Name], I'm calling because you've taken the first step into the 12D group. I'm here to audit your progress. Most people are sleepwalking through their day-to-day — on a scale of 1 to 10, how awake do you actually feel right now?
+    <button class="copy-btn">Copy</button>
+  </div>
+
+  <div class="script">
+    <span class="script-label">Diagnostic</span>
+    When you tried that listening exercise, did you notice how fast your brain tried to pull you back into your narrative? That is a massive Energy Leak. If you don't plug that, you're basically working with a broken bucket. Does that resonate?
+    <button class="copy-btn">Copy</button>
+  </div>
+
+  <div class="script">
+    <span class="script-label">Bridge</span>
+    Most people try to solve fatigue with more 3D solutions — sleep, caffeine, another productivity app. Those don't work because the problem is neurological, not behavioral. The 12D Path is the only protocol that changes the mechanism of how you process reality.
+    <button class="copy-btn">Copy</button>
+  </div>
+
+  <div class="script">
+    <span class="script-label">Close · VIP</span>
+    Based on what you've told me, VIP is where you belong. It's $999 for the year — actually less than paying Premium monthly — and I'm including a 1:1 call with Elizabeth herself. This is the exact toolset you need to stop the leaks and regain your focus. Do we get you started today?
+    <button class="copy-btn">Copy</button>
+  </div>
+</section>
+
+<!-- ============ VIII. OBJECTIONS ============ -->
+<section class="section" id="objections">
+  <div class="section-header">
+    <div class="section-number">VIII.</div>
+    <h2 class="section-title">Handling Objections</h2>
+  </div>
+  <p class="section-intro">Click any objection to reveal the reframe. Search by keyword in the sidebar.</p>
+
+  <div class="objections-grid">
+
+    <div class="objection" data-search="expensive money cost price money afford">
+      <div class="objection-header">
+        <div class="objection-num">8.1</div>
+        <div class="objection-q">"It's too expensive."</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            I hear you. But let's look at the math first. Premium runs $97/mo — that's $1,164 a year. VIP is $999 flat and includes everything in Premium plus full library access, Advanced Remote Viewing, and a 1:1 with Elizabeth. So the "expensive" option is actually the cheaper one. The real question is — how much mental capital are you wasting every day right now? If we plug those leaks and you become 20% more effective, this pays for itself in weeks. This isn't a cost — it's an investment in your primary asset: your mind.
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="objection" data-search="time busy schedule">
+      <div class="objection-header">
+        <div class="objection-num">8.2</div>
+        <div class="objection-q">"I don't have the time."</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            That is exactly the point. You don't have time because your 3D Autopilot is wasting it. You're operating at half-speed. This protocol gives you your time back by making your awareness razor-sharp. Can you afford <em>not</em> to fix this?
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="objection" data-search="meditation buddhism mindfulness">
+      <div class="objection-header">
+        <div class="objection-num">8.3</div>
+        <div class="objection-q">"Is this just more meditation?"</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            Not even close. Meditation is passive. This is active mental engineering. We aren't sitting still — we're learning to navigate different dimensions of awareness to produce real-world results. It's the difference between looking at a car and learning how to drive it.
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="objection" data-search="think consider stall decide later">
+      <div class="objection-header">
+        <div class="objection-num">8.4</div>
+        <div class="objection-q">"Let me think about it."</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            Of course — but let me ask: what specifically do you need to think about? Is it the money, the time, or whether the protocol actually works for someone like you? Let's resolve the real question right now while I'm on the line.
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="objection" data-search="spouse partner husband wife family permission">
+      <div class="objection-header">
+        <div class="objection-num">8.5</div>
+        <div class="objection-q">"I need to talk to my spouse / partner."</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            Totally fair. Before we get off, what do you think they'll ask? Let's get you the answers now so you're not playing telephone. And — is your partner the decision-maker here, or are they a sounding board?
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="objection" data-search="tried before failed program past disappointed">
+      <div class="objection-header">
+        <div class="objection-num">8.6</div>
+        <div class="objection-q">"I've tried programs like this before and they didn't work."</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            That actually tells me you're closer than most. You've already proven you're willing to invest in yourself. The reason the others didn't work is they were 3D solutions to a 12D problem. What did the previous program ask you to do? … Right — and that's exactly why it failed.
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="objection" data-search="skeptical spiritual woo religion belief">
+      <div class="objection-header">
+        <div class="objection-num">8.7</div>
+        <div class="objection-q">"I'm not really sure I believe in the spiritual stuff."</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            Good. We don't ask you to believe anything. The Observational Mind isn't a belief — it's a state you can verify in 30 seconds. If the protocol works, it works whether you call it spiritual or neurological. The labels are 3D — the results aren't.
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="objection" data-search="free group stay community wait">
+      <div class="objection-header">
+        <div class="objection-num">8.8</div>
+        <div class="objection-q">"Can I just stay in the free group for now?"</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            Absolutely, and many people do. But notice what just happened — your Narrative Mind just talked you out of the upgrade. That's the exact leak we're trying to plug. The free group teaches you what's possible. The paid container is where the shift actually happens.
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="objection" data-search="information send email review brochure pdf">
+      <div class="objection-header">
+        <div class="objection-num">8.9</div>
+        <div class="objection-q">"Send me some information and I'll review it."</div>
+        <div class="objection-toggle">+</div>
+      </div>
+      <div class="objection-body">
+        <div class="objection-body-inner">
+          <div class="script">
+            I'd rather not — and here's why. Information isn't your bottleneck. You already have enough information to know something needs to change, or you wouldn't be on this call. What you need is a decision. Let's make it here.
+            <button class="copy-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ IX. RED FLAGS ============ -->
+<section class="section" id="redflags">
+  <div class="section-header">
+    <div class="section-number">IX.</div>
+    <h2 class="section-title">Red Flags &amp; Disqualification</h2>
+  </div>
+  <p class="section-intro">Your time is valuable — and so is the integrity of the community. Walk away when you should.</p>
+
+  <h3>High-Resistance Profile <span style="font-family:var(--sans);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);font-weight:400;margin-left:8px">Low-Fit · Time Sink</span></h3>
+  <ul>
+    <li>Constant victim mentality with no ownership</li>
+    <li>Refuses to try the 30-second exercises</li>
+    <li>Argues over mechanics without engaging</li>
+    <li>Has been "shopping" multiple spiritual programs without committing to any</li>
+  </ul>
+  <div class="script">
+    <span class="script-label">Exit Script · High-Resistance</span>
+    It sounds like you're comfortable with your current Autopilot program for now. No problem. Stay in the free group, keep watching the content, and when you're ready to take the wheel, reach back out. Best of luck.
+    <button class="copy-btn">Copy</button>
+  </div>
+
+  <h3 style="margin-top:48px">Hard-Stop Profile <span style="font-family:var(--sans);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rose);font-weight:500;margin-left:8px">Do Not Enroll</span></h3>
+
+  <div class="alert warning">
+    <div class="alert-title">Non-Negotiable</div>
+    <p style="margin-top:8px">These are <strong style="color:var(--rose)">absolute</strong>. Enrolling these prospects creates harm and exposes the business — even if they have the money and want to pay. Their consent is not the same as their readiness.</p>
+  </div>
+
+  <ul>
+    <li><strong style="color:var(--rose)">Active mental health crisis</strong> — suicidal ideation, severe depression, psychosis, recent psychiatric hospitalization</li>
+    <li><strong style="color:var(--rose)">Looking for therapy or medical treatment</strong> — they need a licensed professional, not a community</li>
+    <li><strong style="color:var(--rose)">Currently in withdrawal or active substance abuse</strong></li>
+    <li><strong style="color:var(--rose)">Acute grief or trauma</strong> within the last 90 days without professional support</li>
+    <li><strong style="color:var(--rose)">Cognitive impairment</strong> that compromises informed consent</li>
+    <li><strong style="color:var(--rose)">Pressured by a third party</strong> to join against their own judgment</li>
+  </ul>
+
+  <div class="script">
+    <span class="script-label">Exit Script · Hard-Stop</span>
+    What you're describing sounds like something that needs more direct, professional support than this community is designed to provide. The 12D Path works best alongside that foundation, not as a replacement for it. I'd encourage you to start there, and the door here stays open.
+    <button class="copy-btn">Copy</button>
+  </div>
+
+  <p style="margin-top:24px" class="muted">Document any hard-stop on the lead record and flag for Elizabeth's review.</p>
+</section>
+
+<!-- ============ X. PRICING ============ -->
+<section class="section" id="pricing">
+  <div class="section-header">
+    <div class="section-number">X.</div>
+    <h2 class="section-title">Pricing &amp; Offer Breakdown</h2>
+  </div>
+  <p class="section-intro">Three tiers. One default close. Know each one cold before you dial.</p>
+
+  <div class="tiers">
+
+    <div class="tier">
+      <div class="tier-name">Standard</div>
+      <div class="tier-internal">The Free Community</div>
+      <div class="tier-price">Free</div>
+      <div class="tier-period">Lead Magnet</div>
+      <div class="tier-includes">Includes</div>
+      <ul class="tier-features">
+        <li>Transformational Community Space &amp; Chat</li>
+        <li>Monthly 2-hour Community Call</li>
+        <li>Monthly mp3 Meditation</li>
+        <li>Option to purchase individual classes</li>
+        <li>Affiliate income by sharing classes</li>
+      </ul>
+      <div class="tier-best">Role in funnel — entry point. Where prospects experience Elizabeth's frame before any paid commitment.</div>
+    </div>
+
+    <div class="tier">
+      <div class="tier-name">Premium</div>
+      <div class="tier-internal">The Classroom</div>
+      <div class="tier-price"><sup>$</sup>97</div>
+      <div class="tier-period">per month</div>
+      <div class="tier-includes">Includes</div>
+      <ul class="tier-features">
+        <li>Everything in the Free tier</li>
+        <li>Monthly live Ritual, Alchemy &amp; Miracles class (10 mo)</li>
+        <li>3hr monthly Inner Realms of Light mentoring</li>
+        <li>$44 off any 1:1 Illumination Session</li>
+        <li>Healing Masculine, Feminine, Children</li>
+        <li>Empaths &amp; Entities, Compassionate</li>
+      </ul>
+      <div class="tier-best">Best for first-time paid commitments, prospects who want monthly flexibility, those new to the framework.</div>
+    </div>
+
+    <div class="tier recommended">
+      <div class="tier-badge">Default Close</div>
+      <div class="tier-name">VIP</div>
+      <div class="tier-internal">The Lab</div>
+      <div class="tier-price"><sup>$</sup>999</div>
+      <div class="tier-period">per year</div>
+      <div class="tier-includes">Includes</div>
+      <ul class="tier-features">
+        <li>Everything in Free + Premium</li>
+        <li>Monthly Ritual, Alchemy &amp; Miracles class</li>
+        <li>Mastery Package — FULL library access</li>
+        <li>All classes for 1 year, including upcoming</li>
+        <li>Advanced Remote Viewing — Monthly Live</li>
+        <li>$100 off Quarterly Illumination Hour Session</li>
+        <li class="bonus">+ Bonus: 1:1 call with Elizabeth</li>
+      </ul>
+      <div class="tier-best">Best for prospects with prior practice, anyone serious about depth, anyone planning to stay longer than 10 months.</div>
+    </div>
+  </div>
+
+  <div class="math-callout">
+    <div class="math-callout-label">⟡ The Math Argument · Your Strongest Lever</div>
+    <div class="math-line">Premium at $97/mo = <strong>$1,164/year</strong></div>
+    <div class="math-line">VIP = <strong>$999/year</strong> + 1:1 with Elizabeth + Full Library + Advanced Remote Viewing</div>
+    <div class="math-result">VIP is <em>$165 cheaper</em> and includes significantly more.</div>
+  </div>
+
+  <div class="bonus-deploy">
+    <div class="bonus-deploy-header">
+      <div class="bonus-deploy-icon">✧</div>
+      <div>
+        <div class="bonus-deploy-title">The 1:1 Bonus</div>
+        <div class="bonus-deploy-sub">The strongest single close lever in the entire offer stack</div>
+      </div>
+    </div>
+
+    <h4>When to Deploy</h4>
+    <ul>
+      <li>The prospect is on the fence between Premium and VIP</li>
+      <li>The prospect has named Elizabeth specifically as the reason they're considering this</li>
+      <li>You're about to lose them to "let me think about it"</li>
+    </ul>
+
+    <h4>How to Phrase It</h4>
+    <div class="script">
+      Here's what I want to do for you. When you commit to VIP today, I'm including a 1:1 call with Elizabeth herself. That's not in the public offer — it's something we extend when someone is genuinely ready to do the work. She doesn't take many of these, so this is real. Are you in?
+      <button class="copy-btn">Copy</button>
+    </div>
+
+    <h4>Rules of Use</h4>
+    <ul class="bonus-rules">
+      <li>Only on the VIP close. Never offered for Premium.</li>
+      <li>Frame as a reward for commitment, not a discount. Bonuses build value — discounts erode it.</li>
+      <li>Once offered, do not negotiate it away. If they still say no, the bonus stays available for follow-up — they don't get a second offer mid-call.</li>
+      <li>Coordinate with Elizabeth's calendar — never oversell what her schedule can deliver.</li>
+    </ul>
+  </div>
+
+  <h3>Payment Options</h3>
+  <ul>
+    <li><strong>Premium:</strong> Monthly recurring at $97</li>
+    <li><strong>VIP:</strong> Annual payment of $999 <span class="muted" style="font-style:italic">(confirm payment plan availability — e.g., 2 × $499)</span></li>
+    <li><strong>Refund policy:</strong> <span class="muted" style="font-style:italic">[Travis — confirm actual policy before distributing]</span></li>
+  </ul>
+</section>
+
+<!-- ============ XI. FOLLOW-UP ============ -->
+<section class="section" id="followup">
+  <div class="section-header">
+    <div class="section-number">XI.</div>
+    <h2 class="section-title">Follow-Up Cadence</h2>
+  </div>
+  <p class="section-intro">Most calls don't close on the first conversation. The fortune is in the follow-up.</p>
+
+  <table class="table">
+    <thead>
+      <tr><th>Day</th><th>Action</th><th>Channel</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="num">D+0</td><td>Recap + clear next step</td><td>Email</td></tr>
+      <tr><td class="num">D+1</td><td>Short voice note — one insight from the call</td><td>Text / DM</td></tr>
+      <tr><td class="num">D+3</td><td>Share a relevant piece of Elizabeth's content</td><td>DM</td></tr>
+      <tr><td class="num">D+7</td><td>"Where did you land?" check-in</td><td>Call or text</td></tr>
+      <tr><td class="num">D+14</td><td>Final re-engagement — soft close</td><td>Email</td></tr>
+      <tr><td class="num">D+30</td><td>Move to long-term nurture list</td><td>CRM</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Rules of Follow-Up</h4>
+  <ul>
+    <li>Always reference something specific from the call. Generic = ignored.</li>
+    <li>Never apologize for following up. You are doing them a service.</li>
+    <li>After Day 14, do not chase. Move them to nurture. Chasing breaks the frame.</li>
+  </ul>
+</section>
+
+<!-- ============ XII. POST-CLOSE HANDOFF ============ -->
+<section class="section non-essential" id="handoff">
+  <div class="section-header">
+    <div class="section-number">XII.</div>
+    <h2 class="section-title">Post-Close Handoff</h2>
+  </div>
+  <p class="section-intro">The close is the start of the relationship, not the end.</p>
+
+  <h4>Within 5 Minutes of Close</h4>
+  <ul>
+    <li>Process payment while on the line</li>
+    <li>Send confirmation email with login + first-step instructions</li>
+    <li>Add them to the appropriate Skool group / cohort</li>
+  </ul>
+
+  <h4>Within 24 Hours</h4>
+  <ul>
+    <li>Welcome message from Elizabeth or the community team</li>
+    <li>Calendar invite to next live call</li>
+    <li>Onboarding checklist sent</li>
+  </ul>
+
+  <h4>Within 7 Days</h4>
+  <ul>
+    <li>Personal check-in — "How did the first ritual land?"</li>
+    <li>Flag any early disengagement to the success team</li>
+  </ul>
+
+  <div class="alert gold">
+    <div class="alert-title">Why This Matters</div>
+    <p style="margin-top:8px">A clean handoff prevents buyer's remorse and refund requests. Most refunds are not about the product — they're about feeling abandoned after the sale.</p>
+  </div>
+</section>
+
+<!-- ============ XIII. TONALITY ============ -->
+<section class="section" id="tonality">
+  <div class="section-header">
+    <div class="section-number">XIII.</div>
+    <h2 class="section-title">Tonality &amp; Delivery</h2>
+  </div>
+  <p class="section-intro">The script is 30% of the call. How you deliver it is the other 70%.</p>
+
+  <ul>
+    <li><strong>Pace</strong> — Slower than feels natural. Silence is your tool. After a diagnostic question, <em>do not fill the pause.</em> Let them sit in it.</li>
+    <li><strong>Pitch</strong> — Lower register signals authority. Especially on the close.</li>
+    <li><strong>Energy</strong> — Calm, certain, grounded. You are the lighthouse — they are the boat. The lighthouse doesn't chase.</li>
+    <li><strong>Mirroring</strong> — Match their pace for the first 5 minutes, then lead them down. If they're frantic, you get slower.</li>
+    <li><strong>Smile</strong> — Audibly. It changes the resonance of your voice.</li>
+  </ul>
+
+  <div class="alert warning">
+    <div class="alert-title">Three Deadly Sins</div>
+    <ol style="margin-top:8px">
+      <li>Over-talking — every word past the point of close is a word that can lose the sale.</li>
+      <li>Pitch-rising at the end of statements. Makes you sound uncertain.</li>
+      <li>Apologizing for the price.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ XIV. ETHICS ============ -->
+<section class="section" id="ethics">
+  <div class="section-header">
+    <div class="section-number">XIV.</div>
+    <h2 class="section-title">Ethics &amp; Compliance</h2>
+  </div>
+  <p class="section-intro">Non-negotiable. Violations are grounds for removal from the team.</p>
+
+  <div class="alert warning">
+    <div class="alert-title">Never Claim</div>
+    <ul style="margin-top:8px">
+      <li>Medical or therapeutic outcomes — "this will cure your anxiety," "this fixes depression"</li>
+      <li>Specific income, performance, or relationship results</li>
+      <li>That the program substitutes for professional mental health care, medical care, or financial advice</li>
+      <li>Anything Elizabeth has not personally claimed in her own teaching</li>
+    </ul>
+  </div>
+
+  <div class="alert success">
+    <div class="alert-title">Always</div>
+    <ul style="margin-top:8px">
+      <li>Be honest about what the program does and doesn't do</li>
+      <li>Respect a "no" the first time — second-time pressure is coercion, not persuasion</li>
+      <li>Document the call accurately in the CRM</li>
+      <li>Disclose payment terms clearly before processing</li>
+      <li>Honor the refund policy without friction</li>
+    </ul>
+  </div>
+
+  <p style="margin-top:32px;font-family:var(--serif);font-style:italic;font-size:18px;color:var(--text-secondary);text-align:center;max-width:640px;margin-left:auto;margin-right:auto">Vulnerable prospects get redirected, never enrolled. Their consent is not the same as their readiness. Long-term reputation outranks short-term commission. Every aggressive close that should have been a "not yet" costs us a refund, a bad review, and harms someone who trusted us.</p>
+</section>
+
+<!-- ============ XV. KPIs ============ -->
+<section class="section non-essential" id="kpis">
+  <div class="section-header">
+    <div class="section-number">XV.</div>
+    <h2 class="section-title">KPIs &amp; Performance Metrics</h2>
+  </div>
+  <p class="section-intro">Track weekly. Review with Elizabeth monthly.</p>
+
+  <table class="table">
+    <thead>
+      <tr><th>Metric</th><th>Target</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Calls booked per week</td><td class="num">___</td></tr>
+      <tr><td>Show-up rate</td><td class="num">75%+</td></tr>
+      <tr><td>Close rate · Premium</td><td class="num">___%</td></tr>
+      <tr><td>Close rate · VIP</td><td class="num">___%</td></tr>
+      <tr><td>Average deal size</td><td class="num">$___</td></tr>
+      <tr><td>Follow-up close rate (D+1–14)</td><td class="num">___%</td></tr>
+      <tr><td>Refund rate</td><td class="num">&lt; 5%</td></tr>
+      <tr><td>Hard-stop disqualifications</td><td class="num">Track count</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Leading Indicators · Predict Future Closes</h4>
+  <ul>
+    <li>Number of diagnostic questions asked per call</li>
+    <li>Talk-to-listen ratio — target <strong>30 / 70</strong>, you / them</li>
+    <li>Time-to-first-objection — later is better discovery</li>
+  </ul>
+</section>
+
+<!-- ============ XVI. THE GOLDEN RULE ============ -->
+<section class="section" id="golden">
+  <div class="golden-rule">
+    <div class="golden-rule-label">⟡ The Golden Rule ⟡</div>
+    <p class="golden-rule-quote">He who asks the <em>questions</em>, controls the <em>state</em>.</p>
+    <p class="golden-rule-tail">Don't pitch — diagnose. If you find the leak and show them the plug, the sale closes itself. If you ever feel like you're <em>pushing</em>, stop. Ask another question. Get back into the audit. Pressure is what 3D salespeople do. We operate from a higher dimension.</p>
+  </div>
+</section>
+
+<div class="footer">Internal · The 12D Path Sales Team · v1.1 · Not for distribution outside the team</div>
+
+</main>
+</div>
+
+<script>
+// ============ NAV: Smooth scroll & active state ============
+const navItems = document.querySelectorAll('.nav-item');
+const sections = document.querySelectorAll('.section, .hero');
+
+navItems.forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    const targetId = item.getAttribute('href').slice(1);
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Active state on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(item => {
+        item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+
+sections.forEach(s => { if (s.id) observer.observe(s); });
+
+// ============ OBJECTIONS: accordion ============
+document.querySelectorAll('.objection-header').forEach(header => {
+  header.addEventListener('click', () => {
+    header.parentElement.classList.toggle('open');
+  });
+});
+
+// ============ COPY buttons ============
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const script = btn.parentElement;
+    // Get text content, exclude the button and label
+    const clone = script.cloneNode(true);
+    clone.querySelectorAll('.copy-btn, .script-label').forEach(el => el.remove());
+    const text = clone.textContent.trim();
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.classList.add('copied');
+      btn.textContent = '✓ Copied';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.textContent = 'Copy';
+      }, 1800);
+    } catch (err) {
+      // Fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); btn.textContent = '✓ Copied'; setTimeout(()=>btn.textContent='Copy',1800); } catch(e){}
+      document.body.removeChild(ta);
+    }
+  });
+});
+
+// ============ CALL MODE ============
+const callModeBtn = document.getElementById('callModeBtn');
+callModeBtn.addEventListener('click', () => {
+  document.body.classList.toggle('call-mode');
+  callModeBtn.classList.toggle('active');
+});
+
+// ============ PRINT ============
+document.getElementById('printBtn').addEventListener('click', () => {
+  window.print();
+});
+
+// ============ SEARCH ============
+const searchInput = document.getElementById('search');
+const allSearchable = [
+  ...document.querySelectorAll('.section'),
+  ...document.querySelectorAll('.objection'),
+  ...document.querySelectorAll('.q-group'),
+  ...document.querySelectorAll('.tier'),
+  ...document.querySelectorAll('.glossary-row')
+];
+
+searchInput.addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+
+  if (!q) {
+    // Reset everything
+    allSearchable.forEach(el => el.classList.remove('hidden'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('hidden'));
+    return;
+  }
+
+  // Filter objections specifically (they have search data attrs)
+  document.querySelectorAll('.objection').forEach(o => {
+    const data = (o.dataset.search || '') + ' ' + o.textContent.toLowerCase();
+    o.classList.toggle('hidden', !data.includes(q));
+    if (data.includes(q)) o.classList.add('open');
+  });
+
+  // Filter sections: show section if any text matches
+  document.querySelectorAll('.section').forEach(s => {
+    const text = s.textContent.toLowerCase();
+    s.classList.toggle('hidden', !text.includes(q));
+  });
+});
+
+// Keyboard shortcut: cmd/ctrl+k focuses search
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    searchInput.focus();
+  }
+  if (e.key === 'Escape' && document.activeElement === searchInput) {
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input'));
+    searchInput.blur();
+  }
+});
+</script>
+
+</body>
+</html>
