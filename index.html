@@ -798,6 +798,14 @@ body.call-mode .non-essential { display: none; }
   margin: 32px 0;
 }
 
+.tiers.tiers-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .tiers.tiers-4 { grid-template-columns: 1fr 1fr; }
+}
+
 .tier {
   position: relative;
   background: var(--bg-card);
@@ -1314,6 +1322,7 @@ body.call-mode .non-essential { display: none; }
   .main { padding: 48px 48px 100px; }
   .hero-title { font-size: 48px; }
   .tiers { grid-template-columns: 1fr; }
+  .tiers.tiers-4 { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -2014,10 +2023,96 @@ body.call-mode .non-essential { display: none; }
 
   <h3>Payment Options</h3>
   <ul>
+    <li><strong>Standard:</strong> $7/mo, 7-day free trial (new members). Existing members grandfathered free.</li>
     <li><strong>Premium:</strong> Monthly recurring at $97</li>
     <li><strong>VIP:</strong> Annual payment of $999 <span class="muted" style="font-style:italic">(confirm payment plan availability — e.g., 2 × $499)</span></li>
     <li><strong>Refund policy:</strong> <span class="muted" style="font-style:italic">[Travis — confirm actual policy before distributing]</span></li>
   </ul>
+
+  <div class="divider"><span class="divider-mark">✦</span></div>
+
+  <h3>Top Tier VIP Packages <span style="font-family:var(--sans);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-left:8px">Separate from Skool</span></h3>
+
+  <div class="alert gold">
+    <div class="alert-title">Important — Different Offer Stack</div>
+    <p style="margin-top:8px">Everything above (Standard / Premium / VIP at $7 · $97 · $999) is the <strong>Skool community</strong> pricing. The four packages below are a completely separate, high-ticket private mentorship stack — <strong>direct 1:1 and small-group work with Elizabeth</strong>, sold outside of Skool. Do not blend the two offers or compare their pricing directly on a call unless a prospect is already inside VIP and asking about deeper work.</p>
+  </div>
+
+  <div class="tiers tiers-4">
+
+    <div class="tier">
+      <div class="tier-name">Path Illumination</div>
+      <div class="tier-internal">Mentoring Package</div>
+      <div class="tier-price"><sup>$</sup>888</div>
+      <div class="tier-period">3-month program</div>
+      <div class="tier-includes">Includes</div>
+      <ul class="tier-features">
+        <li>3 private 1-hour sessions with Elizabeth</li>
+        <li>Oracle guidance &amp; soul development focus</li>
+        <li>Handpicked resources tailored to the client</li>
+      </ul>
+      <div class="tier-best">Best for prospects seeking path clarity, discernment, and a first taste of 1:1 mentoring with Elizabeth.</div>
+    </div>
+
+    <div class="tier">
+      <div class="tier-name">12D Advanced</div>
+      <div class="tier-internal">Mentoring Program</div>
+      <div class="tier-price"><sup>$</sup>3,500</div>
+      <div class="tier-period">5-month program</div>
+      <div class="tier-includes">Includes</div>
+      <ul class="tier-features">
+        <li>Monthly group mentoring</li>
+        <li>5 private sessions with Elizabeth</li>
+        <li>Monthly Remote Viewing Healing Journey</li>
+        <li>Advanced training &amp; educational library</li>
+        <li>Ritual, Alchemy &amp; Miracles class</li>
+      </ul>
+      <div class="tier-best">Best for committed students ready for deeper soul development and consistent private access to Elizabeth.</div>
+    </div>
+
+    <div class="tier">
+      <div class="tier-name">Business of Light</div>
+      <div class="tier-internal">Mentoring Program</div>
+      <div class="tier-price"><sup>$</sup>4,500</div>
+      <div class="tier-period">6-month program</div>
+      <div class="tier-includes">Includes</div>
+      <ul class="tier-features">
+        <li>12D Library VIP — 1-year pass</li>
+        <li>Monthly group mentoring for 1 year</li>
+        <li>6 private sessions with Elizabeth over 6 months</li>
+        <li>Monthly Remote Viewing Healing Journey (1 yr)</li>
+        <li>10-part Business of Light masterclass + PDF library</li>
+      </ul>
+      <div class="tier-best">Best for healers, coaches, and practitioners ready to build or scale their own healing business.</div>
+    </div>
+
+    <div class="tier recommended">
+      <div class="tier-badge">Top Tier</div>
+      <div class="tier-name">Diamond Mind</div>
+      <div class="tier-internal">Master Roundtable</div>
+      <div class="tier-price"><sup>$</sup>8,000</div>
+      <div class="tier-period">12-month membership</div>
+      <div class="tier-includes">Includes</div>
+      <ul class="tier-features">
+        <li>Monthly group mentoring with Elizabeth</li>
+        <li>Monthly Diamond Mind elite council roundtable</li>
+        <li>12 private 1-hour sessions with Elizabeth (1/mo)</li>
+        <li>$30,000+ digital wisdom library</li>
+        <li>Monthly Remote Viewing Healing Journey</li>
+        <li class="bonus">+ Private, application-only elite community</li>
+      </ul>
+      <div class="tier-best">Best for visionaries and advanced seekers wanting sustained, high-touch mentorship and elite peer access over a full year.</div>
+    </div>
+  </div>
+
+  <div class="alert warning">
+    <div class="alert-title">Sales Notes</div>
+    <ul style="margin-top:8px">
+      <li>These are application/conversation-gated, not self-checkout — each starts with a private scheduled conversation, not an instant close.</li>
+      <li>Diamond Mind is invitation/application-only; do not pitch it cold — it's positioned as selective and limited.</li>
+      <li>Natural upgrade path: Skool VIP → Path Illumination → 12D Advanced → Business of Light or Diamond Mind, as trust and depth increase.</li>
+    </ul>
+  </div>
 </section>
 
 <!-- ============ XI. FOLLOW-UP ============ -->
